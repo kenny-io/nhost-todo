@@ -27,7 +27,6 @@ export default function Todos({ todos, loading, error }) {
       </h2>
     );
   }
-
   if (error) {
     console.error(error);
     return null;
