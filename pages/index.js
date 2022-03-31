@@ -2,7 +2,6 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { useQuery, useSubscription, useMutation } from "@apollo/client";
 import { useState, useEffect } from "react";
-import PostToHasura from "../utils/PostToHasura";
 import { gql } from "@apollo/client";
 import Todos from "../components/Todos";
 
@@ -13,7 +12,6 @@ const AddTodo = gql`
     }
   }
 `;
-
 const GetTodos = gql`
   query {
     todos {
@@ -22,7 +20,6 @@ const GetTodos = gql`
     }
   }
 `;
-
 export default function Home() {
   const [todoTitle, setTodoTitle] = useState("");
   const [insertTodo] = useMutation(AddTodo);
