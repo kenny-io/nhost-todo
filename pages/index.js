@@ -4,9 +4,14 @@ import { useQuery, useSubscription, useMutation } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { gql } from "@apollo/client";
 import Todos from "../components/Todos";
-
+// import { NhostClient } from "@nhost/react";
+import {
+  useSignInEmailPassword,
+  useAuthenticated,
+  useSignOut,
+} from "@nhost/nextjs";
 const AddTodo = gql`
-  mutation ($todo: todos_insert_input!) {
+  mutation($todo: todos_insert_input!) {
     insert_todos(objects: [$todo]) {
       affected_rows
     }
@@ -21,10 +26,13 @@ const GetTodos = gql`
   }
 `;
 export default function Home() {
+  // const [user, setUser] = useState("");
+  const isAuthenticated = useAuthenticated();
+  const signOut = useSignOut();
   const [todoTitle, setTodoTitle] = useState("");
   const [insertTodo] = useMutation(AddTodo);
   const { data, loading, error } = useQuery(GetTodos);
-  console.log(data);
+
   async function handleOnSubmit(event) {
     event.preventDefault();
     try {
@@ -41,6 +49,37 @@ export default function Home() {
       console.log(error);
     }
   }
+
+  const { signInEmailPassword } = useSignInEmailPassword(
+    "hello@kenny.engineer",
+    "123456789"
+  );
+
+  // const SignInUser = async () => {
+  //   try {
+  //     const response = useSignInEmailPassword(
+  //       "hello@kenny.engineer",
+  //       "123456789"
+  //     );
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // async function loginUser() {
+  //   const nhost = new NhostClient({
+  //     backendUrl: "https://segpnfheljosgpyuimuo.nhost.run",
+  //   });
+
+  //   try {
+  //     const
+  //     console.log(signInResponse);
+  //     setUser(signInResponse.user);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   return (
     <div className={styles.container}>
       <Head>
@@ -63,6 +102,16 @@ export default function Home() {
             />
           </form>
         </div>
+        {/* Show button when user does not exist */}
+        {isAuthenticated ? (
+          <button className={styles.button} onClick={signInEmailPassword}>
+            Sign In
+          </button>
+        ) : (
+          <button className={styles.button} onClick={signOut}>
+            Sign Out
+          </button>
+        )}
         {/* <pre>{JSON.stringify(data.todos, null, 2)}</pre> */}
         {data && data.todos && (
           <Todos todos={data.todos} error={error} loading={loading} />
